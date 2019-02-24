@@ -1,9 +1,11 @@
 const express = require ('express');
 const bodyParser = require ('body-parser');
 const bcrypt = require ('bcrypt-nodejs');
+const cors = require ('cors');
 
 const app = express();
 app.use(bodyParser.json())
+app.use(cors())
 
 const database = {
     users: [
@@ -57,7 +59,8 @@ app.post('/signin', (req,res) => {
     if (user.length!==0){
         bcrypt.compare(password, user[0].password, function(err, compareResponse) {
             if (compareResponse){
-                res.json("success");
+                console.log('SIGNIN  ',user[0])
+                res.json(user[0]);
             }
         });
     }else {
@@ -68,7 +71,7 @@ app.post('/signin', (req,res) => {
 
 app.post('/register/', (req,res) => {
     const {name,email,password} = req.body;
-    const passHashed = '';
+    
     bcrypt.hash(password, null, null, function(err, hash) {
         // Store hash in your password DB.
         database.users.push({
@@ -81,9 +84,7 @@ app.post('/register/', (req,res) => {
         });
         console.log (database.users);
     });
-    
-    
-    
+    //una vez que  un usuario se registra se retorna el ultimo agregado.
     res.json(database.users[database.users.length-1]);
 });
 
