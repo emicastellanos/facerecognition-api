@@ -51,11 +51,19 @@ app.post('/signin', (req,res) => {
     .where('email','=', email)
     .then(data => {
         if(data.length){
-            res.json(data[0])
+            if(bcrypt.compareSync(password, data[0].hash)){
+                db.select('*').from('users')
+                .where('email','=',email)
+                .then(user => res.json(user[0]))
+                .catch(err => res.status(400).json('unable to get user'))
+            }else {
+                res.status(400).json("password and user did not match, you assface"); //para no decir que no existe el email ese
+            }
         }else {
-            res.status(400).json("password and user did not match, you assface");    
+            res.status(400).json("password and user did not match, you asshole"); 
         }
     })
+    .catch(err => res.status(400).json('error in signin'))
     
 });
 
@@ -74,24 +82,21 @@ app.post('/register/', (req,res) => {
                     .returning('*')
                     .insert({
                         name: name,
-                        email: loginEmail,
+                        email: loginEmail[0],
                         joined: new Date()
                     })
-                    .then(user => res.json(user[0]))
+                    .then(user => {
+                        console.log(user[0])
+                        res.json(user[0])})
         })
         .then(trx.commit)
         .catch(trx.rollback)
     })
     .catch(err => res.status(400).json('unable to register'))
-    
-        
-
     /* manera asincronica, se llama y js continua la ejecucion hasta que la funcion de adentro retorna algo
      password: bcrypt.hash(password, null, null, function(err, hash) {
          return hash;
      }), */
-    
-    
 });
 
 app.get('/profile/:id', (req,res) => {
