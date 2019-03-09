@@ -1,6 +1,10 @@
 const handleSignIn = (req,res,db,bcrypt) => {
   const {email,password} = req.body;
 
+  if(!email || !password){
+      return res.status(400).json('')
+  }
+
   db.select('*').table('login')
   .where('email','=', email)
   .then(data => {
