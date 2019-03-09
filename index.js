@@ -47,7 +47,7 @@ const getUser = (id) => {
 app.listen(3000);
 
 app.get('/', (req,res) => {
-    res.send(database.users);
+    res.send(`it's working! `);
 });
 
 //ENDPOINTS 
